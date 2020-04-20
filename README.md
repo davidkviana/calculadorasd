@@ -18,9 +18,9 @@ Caso dê tudo certo o resultado deve ser mostrado na calculadora e ao lado as ex
 # Funcionamento:
 A aplicação possúi 4 arquivos java (Main.java, RPN.java, StaticFileHandler.java, UndoRPN.java) e 4 arquivos na pasta html (index.html, calc.js, 404.html e not_supported.html).
 
-Foi escrito um servidor HTTP estático que provê o funcionamento do serviço em http://localhost:8080/calculadora/ e exibe o layout de uma calculadora para o usuário. 
+Foi escrito um servidor HTTP estático que provê o funcionamento do serviço em http://localhost:8080/calculadora/ que exibe o layout de uma calculadora para o usuário. 
 
-O servidor HTTP é iniciado em Main.java que utiliza a classe StaticFileHandler.java para escutar as requisições do serviço web da calculadora, neste caso as requisições que são realizada são as operações da calculadora, soma, subtração, divisão e multiplicação.
+O servidor HTTP é iniciado em Main.java que utiliza a classe StaticFileHandler para escutar as requisições do serviço web da calculadora, neste caso as requisições que são realizada são as operações da calculadora, soma, subtração, divisão e multiplicação.
 
 O problema desta aplicação é porque o servidor que provê as operações matemáticas em "https://double-nirvana-273602.appspot.com/?hl=pt-BR" só realiza operações no formato "oper1=val&oper2=val&operacao=tipo" o que limitava os cálculos em receber apenas uma operação com duas variáveis. Assim, pesquisei uma forma de tranformar expressões matemáticas em uma árvore binária que faz a precedência dos cálculos e dividindo a expressão no formato que precisávamos "oper1=val&oper2=val&operacao=tipo".
 
@@ -41,4 +41,8 @@ A classe UndoRPN transforma uma expressão matemática em uma árvore onde cada 
  */
  ```
  
-Por fim a classe RPN é a classe que usa a função do projeto original e faz as solicitações para o serviço "https://double-nirvana-273602.appspot.com/?hl=pt-BR". Quando a classe RPN recebe uma requisição entregue por UndoRPN no formato 'bc*+a', RPN consegue criar os comandos "oper1=b&oper2=c&operacao=3" para a muitiplicação, criando um resultado parcial, 'parc1' para em seguida fazer "oper1=parc1&oper2=a&operacao=1" para a soma, e assim em cada uma dessas expressões é feita a solicitação para o servidor PHP.
+Em seguida a classe RPN é a classe que usa a função do projeto original e faz as solicitações para o serviço "https://double-nirvana-273602.appspot.com/?hl=pt-BR". 
+
+Quando a classe RPN recebe uma requisição entregue por UndoRPN no formato 'bc*+a', RPN consegue criar os comandos "oper1=b&oper2=c&operacao=3" para a muitiplicação, criando um resultado parcial, 'parc1' para em seguida fazer "oper1=parc1&oper2=a&operacao=1" para a soma, e assim em cada uma dessas expressões é feita a solicitação para o servidor PHP.
+
+Por fim a classe RPN processa junto ao servidor PHP e ao final de todas as requisições armazena em result o resultado final da expressão. Quando o na calculadora web é pessionado o botão de igualdade a expressão existente lá é enviada e processada remotamente. Ao final, quando RPN obtém o resultado, a classe StaticFileHandler lê result e então envia a resposta ao cliente mostrando na calculadora o resultado.
